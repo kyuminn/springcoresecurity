@@ -1,0 +1,20 @@
+Spring Security의 인가처리
+    SecurityConfig에
+        http.antMatchers("/admin/**").hasRoles("admin")
+
+    이라고 설정한 경우
+    시큐리티에서 이 설정을 읽어들인 뒤 Map<자원경로,권한정보> 타입으로 저장해놓음.
+    cf) ExpressionBasedFilterInvocationSecurityMetadatSource.java 에 map 있음 (부모 클래스의 메소드 사용 DefaultFilterInvocationSecurityMetaDataSource)
+    FitlerSecurityInterceptor는 사용자가 요청한 url을 key로 가지는 value를 얻어서 권한목록정보를 얻을 수 있고,
+    인증정보는 SecurityContext 안에 저장되어 있는 인증정보를 참조하며,
+    요청정보는 FilterInvocation 객체 형태로 전달
+     FilterSecurityInterceptor가 인증,요청,권한정보를 담아서 AccessDecisionManager(접근 결정 관리자)에게 인가처리를 하도록 위임
+        -> vote(Authentication,FilterInvocation,List<ConfigAttribute>)
+
+    DB 연동해서 인가처리를 할 때에도 인증,요청,권한정보를 전달하는 것이 중요함
+    DB 연동해서 인가처리 할때도 Map 기반으로 진행함.
+
+
+   기존에 있는 FilterInterceptor 와 customize 한 FilterInterceptor 필터 두개가 있는 경우
+   같은 인터페이스 타입의 FilterInterceptor가 있는 경우 먼저 오는 필터에서 인가처리가 된 경우 다음 동일한 인터페이스 타입의 필터에서는
+   인가처리를 하지 않는다 (FILTER_APPLIED 속성 체크)
