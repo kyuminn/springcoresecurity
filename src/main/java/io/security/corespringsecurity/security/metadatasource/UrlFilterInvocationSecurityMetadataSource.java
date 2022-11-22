@@ -9,6 +9,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
+// 요청경로와 그 경로에 필요한 권한을 Map으로 저장하고 있는 class 
+//FitlerSecurityInterceptor 가 후에 이 class안의 Map을 참조하여 인가처리를 진행
 @Slf4j
 public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
     //ConfigAttribute : 권한정보
@@ -25,6 +27,7 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
         // FilterInvocation : client 요쳥정보, request, response 객체가 담겨있음
 
 //        requestMap.put(new AntPathRequestMatcher("/mypage"),Arrays.asList(new SecurityConfig("ROLE_USER")));
+        // requestMap을 DB에서 얻어오는 방식
         HttpServletRequest request = ((FilterInvocation) object).getRequest();
 
         if(requestMap != null){
