@@ -21,7 +21,9 @@ Spring Security의 인가처리
 
 
    이 프로젝트는..돌아가진 않음.
-   !!! 아래 sql문 실행하면 잘 돌아감 ㅎㅎ
+
+   !!! 일단 초반에 master브랜시 소스 다운받아서  spring.jpa.hibernate.ddl-auto=create 설정 후 프로젝트 run,db에 테이블 구조는 모두 생성됨
+   그 다음에 이 프로젝트에서 저 부분 주석처리 하고 데이터만 넣어주는 아래 sql문 실행하면 잘 돌아감 ㅎㅎ
    select * from account;
    select * from role;
    # 회원가입은 홈페이지에서 admin, user, manager 순으로 하면 됨
@@ -52,3 +54,12 @@ Spring Security의 인가처리
    insert into role_resources values(3,3);
    insert into role_resources values(4,1);
 
+   ### 권한계층설정(role_hierarchy)
+   insert into role_hierarchy values(1,ROLE_ADMIN,NULL);
+   insert into role_hierarchy values(2,ROLE_MANAGER,ROLE_ADMIN);
+   insert into role_hierarchy values(3,ROLE_USER,ROLE_MANAGER);
+
+   role_hierarchy 테스트 하고 싶으면
+    account_roles table에서 각 account_id에 해당하는 role_id 하나만 남도록 컬럼 삭제해보기
+    예) account_id admin인 경우 role_id ROLE_ADMIN만 갖도록 !
+    그래도 /mypage, /messages에 접근 되는지 보기

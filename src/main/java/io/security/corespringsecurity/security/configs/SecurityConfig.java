@@ -18,7 +18,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleHierarchyVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -36,6 +39,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -173,7 +177,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
-        return Arrays.asList(new RoleVoter());
+        List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(roleVoter());
+        // roleHierarchyVoter가 아닌 일반 new roleVoter()로 voter 생성하는 경우 권한 계층 설정 적용 안됨/ 테스트시 주석 해제하고 해볼 것
+//        accessDecisionVoters.add(new RoleVoter());
+        return accessDecisionVoters;
+    }
+
+    @Bean
+    public  AccessDecisionVoter<? extends Object> roleVoter() {
+        // RoleHierarchyVoter가 roleHierarchy를 내부적으로 참조하므로 생성자에 같이 넣어줘야 한다.
+        RoleHierarchyVoter roleHierarchyVoter = new RoleHierarchyVoter(roleHierarchy());
+        return roleHierarchyVoter;
+    }
+
+    @Bean
+    public RoleHierarchyImpl roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        return  roleHierarchy;
     }
 
     @Bean
