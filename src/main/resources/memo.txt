@@ -54,6 +54,9 @@ Spring Security의 인가처리
    insert into role_resources values(3,3);
    insert into role_resources values(4,1);
 
+   // 권한 ip 설정
+   insert into access_ip values(16,'0:0:0:0:0:0:0:1');
+
    ### 권한계층설정(role_hierarchy)
    insert into role_hierarchy values(1,ROLE_ADMIN,NULL);
    insert into role_hierarchy values(2,ROLE_MANAGER,ROLE_ADMIN);

@@ -9,6 +9,7 @@ import io.security.corespringsecurity.security.handler.FormAccessDeniedHandler;
 import io.security.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import io.security.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import io.security.corespringsecurity.security.provider.FormAuthenticationProvider;
+import io.security.corespringsecurity.security.voter.IPAddressVoter;
 import io.security.corespringsecurity.service.SecurityResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationSuccessHandler formAuthenticationSuccessHandler;
     @Autowired
     private AuthenticationFailureHandler formAuthenticationFailureHandler;
+    //AppConfig에서 bean등록했음.
     @Autowired
     private SecurityResourceService securityResourceService;
 
@@ -171,6 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return filterSecurityInterceptor;
     }
 
+    //voter가 access 승인을 하나라도 return 하면 무조건 접근승인
     private AccessDecisionManager affirmativeBased() {
         AffirmativeBased affirmativeBased = new AffirmativeBased(getAccessDecisionVoters());
         return affirmativeBased;
@@ -178,6 +181,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        // IPAddressVoter가 다른 voter보다 먼저 심사를 하도록 앞쪽에 위치시킴
+        accessDecisionVoters.add(new IPAddressVoter(securityResourceService));
         accessDecisionVoters.add(roleVoter());
         // roleHierarchyVoter가 아닌 일반 new roleVoter()로 voter 생성하는 경우 권한 계층 설정 적용 안됨/ 테스트시 주석 해제하고 해볼 것
 //        accessDecisionVoters.add(new RoleVoter());
