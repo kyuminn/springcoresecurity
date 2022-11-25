@@ -79,6 +79,8 @@ public class UserController {
 //		String username4 = account4.getUsername();
 //		System.out.println("username4 = " + username4);
 
+		userService.order();
+
 		return "user/mypage";
 	}
 }

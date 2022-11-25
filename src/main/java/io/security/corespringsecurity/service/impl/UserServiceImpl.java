@@ -9,6 +9,7 @@ import io.security.corespringsecurity.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,5 +88,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    // order()에 접근을 하기 전에 인가 검사
+    @Override
+    @Secured("ROLE_MANAGER")
+    public void order() {
+        log.info("!!order method!!");
     }
 }
