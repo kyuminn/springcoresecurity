@@ -48,7 +48,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @Slf4j
-@EnableGlobalMethodSecurity(securedEnabled = true) //method aop 기반 security annotation을 인식할 수 있도록 활성화
+//@EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true) //method aop 기반 security annotation을 인식할 수 있도록 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired

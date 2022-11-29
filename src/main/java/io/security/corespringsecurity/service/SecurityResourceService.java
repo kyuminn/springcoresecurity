@@ -34,6 +34,7 @@ public class SecurityResourceService {
 //        this.accessIPRepository = accessIPRepository;
 //    }
 
+    // url 방식의 자원 가져오기
     public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getResourceList() {
         LinkedHashMap<RequestMatcher, List<ConfigAttribute>> result = new LinkedHashMap<>();
         // DB로부터 관련 정보를 가져옴
@@ -46,8 +47,29 @@ public class SecurityResourceService {
                     re.getRoleSet().forEach(ro -> {
                         // SecurityConfig는 ConfigAttribute 타입의 구현체
                         configAttributeList.add(new SecurityConfig(ro.getRoleName()));
-                        result.put(new AntPathRequestMatcher(re.getResourceName()), configAttributeList);
                     });
+                    // resource 하나당 여러개의 role이 들어갈 수 있으므로 put 하는 부분 바깥으로 뺌
+                    result.put(new AntPathRequestMatcher(re.getResourceName()), configAttributeList);
+                }
+        );
+        return result;
+    }
+
+    // method 방식의 자원 가져오기
+    public LinkedHashMap<String, List<ConfigAttribute>> getMethodResourceList() {
+        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+        // DB로부터 관련 정보를 가져옴
+        List<Resources> resourcesList = resourcesRepository.findAllMethodResources();
+
+        // 가져온 정보를 LinkedHashMap<> 타입으로 가공 후 return
+        resourcesList.forEach(re ->
+                {
+                    List<ConfigAttribute> configAttributeList = new ArrayList<>();
+                    re.getRoleSet().forEach(ro -> {
+                        // SecurityConfig는 ConfigAttribute 타입의 구현체
+                        configAttributeList.add(new SecurityConfig(ro.getRoleName()));
+                    });
+                    result.put(re.getResourceName(), configAttributeList);
                 }
         );
         return result;

@@ -1,68 +1,42 @@
-//package io.security.corespringsecurity.security.configs;
-//
-//import io.security.corespringsecurity.security.factory.UrlResourcesMapFactoryBean;
-//import io.security.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
-//import io.security.corespringsecurity.service.SecurityResourceService;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.web.servlet.FilterRegistrationBean;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.access.AccessDecisionManager;
-//import org.springframework.security.access.AccessDecisionVoter;
-//import org.springframework.security.access.vote.AffirmativeBased;
-//import org.springframework.security.access.vote.RoleVoter;
-//import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-//import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
-//import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-//import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-//
-//import java.util.Arrays;
-//import java.util.List;
-//
-//@Configuration
-//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-//@Slf4j
-//public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration{
-//
+package io.security.corespringsecurity.security.configs;
+import io.security.corespringsecurity.security.factory.MethodResourcesFactoryBean;
+import io.security.corespringsecurity.service.SecurityResourceService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
+import org.springframework.security.access.method.MethodSecurityMetadataSource;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
+
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true) // map 기반이기 때문에 annotation 지워서 test
+@RequiredArgsConstructor
+@Slf4j
+public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration{
+
 //    @Autowired
 //    private SecurityResourceService securityResourceService;
-//
-//    @Bean
-//    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
-//        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-//        filterSecurityInterceptor.setSecurityMetadataSource(urlSecurityMetadataSource());
-//        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
-//        return filterSecurityInterceptor;
-//    }
-//
-//    @Bean
-//    public FilterInvocationSecurityMetadataSource urlSecurityMetadataSource() {
-//        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean().getObject());
-//    }
-//
-//    @Bean
-//    public UrlResourcesMapFactoryBean urlResourcesMapFactoryBean(){
-//        UrlResourcesMapFactoryBean urlResourcesMapFactoryBean = new UrlResourcesMapFactoryBean();
-//        urlResourcesMapFactoryBean.setSecurityResourceService(securityResourceService);
-//        return urlResourcesMapFactoryBean;
-//    }
-//
-//    @Bean
-//    public AccessDecisionManager affirmativeBased() {
-//        AffirmativeBased accessDecisionManager = new AffirmativeBased(getAccessDecisionVoters());
-//        return accessDecisionManager;
-//    }
-//
-//    private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
-//        return Arrays.asList(new RoleVoter());
-//    }
-//
-//    @Bean
-//    public FilterRegistrationBean filterRegistrationBean() throws Exception {
-//        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-//        filterRegistrationBean.setFilter(customFilterSecurityInterceptor());
-//        filterRegistrationBean.setEnabled(false);
-//        return filterRegistrationBean;
-//    }
-//}
+
+    private final SecurityResourceService securityResourceService;
+
+    @Override
+    protected MethodSecurityMetadataSource customMethodSecurityMetadataSource() {
+        // map 기반 method 인가 처리 기능을 제공하는 class
+        return mapBasedMethodSecurityMetadataSource();
+    }
+
+    @Bean
+    public MapBasedMethodSecurityMetadataSource mapBasedMethodSecurityMetadataSource() {
+        return new MapBasedMethodSecurityMetadataSource(methodResourcesMapFactoryBean().getObject());
+    }
+
+    @Bean
+    public MethodResourcesFactoryBean methodResourcesMapFactoryBean() {
+        MethodResourcesFactoryBean methodResourcesFactoryBean = new MethodResourcesFactoryBean(securityResourceService);
+        return methodResourcesFactoryBean;
+    }
+}

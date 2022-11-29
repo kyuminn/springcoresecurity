@@ -66,3 +66,10 @@ Spring Security의 인가처리
     account_roles table에서 각 account_id에 해당하는 role_id 하나만 남도록 컬럼 삭제해보기
     예) account_id admin인 경우 role_id ROLE_ADMIN만 갖도록 !
     그래도 /mypage, /messages에 접근 되는지 보기
+
+
+
+    ==================================================================================
+    # method 방식 인가 - db
+    insert into resources values(5,'',5,'io.security.corespringsecurity.aopsecurity.AopMethodService.methodSecured','method');
+    insert into role_resources values(5,2);
